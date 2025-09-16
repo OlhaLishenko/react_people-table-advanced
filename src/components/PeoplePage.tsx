@@ -1,9 +1,9 @@
 import { PeopleFilters } from './PeopleFilters';
 import { Loader } from './Loader';
-import { PeopleTable } from './PeopleTable';
 import { useContext, useEffect } from 'react';
 import { PeopleListContext } from '../store/PeopleContext';
 import * as getPeopleList from '../api';
+import { Outlet } from 'react-router-dom';
 
 export const PeoplePage = () => {
   const {
@@ -15,7 +15,6 @@ export const PeoplePage = () => {
   } = useContext(PeopleListContext);
 
   useEffect(() => {
-    setLoader(true);
     getPeopleList
       .getPeople()
       .then(data => {
@@ -35,7 +34,7 @@ export const PeoplePage = () => {
         }),
       )
       .finally(() => setLoader(false));
-  }, []);
+  }, [setLoader, setPeopleList, dispatch]);
 
   return (
     <>
@@ -59,7 +58,7 @@ export const PeoplePage = () => {
                     <p data-cy="noPeopleMessage">{ currentState.alarm }</p>
                   )}
 
-                  <PeopleTable />
+                  <Outlet />
                 </div>
               </div>
             </>

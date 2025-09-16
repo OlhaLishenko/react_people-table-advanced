@@ -5,23 +5,35 @@ import classNames from 'classnames';
 import { PersonLink } from './PersonLink';
 import { Person } from '../types';
 import { SearchParamsContext } from '../store/searchHelper';
-import { makeSort } from '../utils/filter';
+// import { SearchField } from '../store/SortConfig'
+import { makeSort } from '../utils/Filter';
+// import { FilterContext } from '../utils/FilterContext';
 
 export const PeopleTable = () => {
   const { peopleList } = useContext(PeopleListContext);
+  // const { filteredList, setFilteredList, makeSort } = useContext(FilterContext);
   const { slug } = useParams();
   const { searchParams, getSearchWith } = useContext(SearchParamsContext);
-  const sortBy =
-    searchParams.get('order') ||
-    searchParams.get('sort') ||
-    searchParams.get('sex') ||
-    (searchParams.has('query') && 'query') ||
-    (searchParams.get('century') && 'century') ||
-    '';
+
+  // const sortBy =
+  //   searchParams.get('order') ||
+  //   searchParams.get('sort') ||
+  //   searchParams.get('sex') ||
+  //   (searchParams.has('query') && 'query') ||
+  //   (searchParams.get('centuries') && 'centuries') ||
+  //   '';
+
+  // const sortBy: SearchField = new SearchField(searchParams);
+
+  // console.log(sortBy);
+
+  // useEffect(() => {
+    //   setFilteredList(visibleList);
+    // }, [sortBy]);
+
+  const visibleList = makeSort(peopleList, searchParams);
 
   const filters = ['name', 'sex', 'born', 'died'];
-
-  const visibleList: Person[] = makeSort(sortBy, peopleList, searchParams);
 
   const getMother = (personsMother: string | null): Person | null => {
     if (!personsMother) {
@@ -52,6 +64,14 @@ export const PeopleTable = () => {
   const getSlug = (person: Person) =>
     `${person.name.toLowerCase().replaceAll(' ', '-')}-${person.born}`;
 
+  // const handleFilterList = () => {
+  //   setSortBy(new SearchField(searchParams));
+
+  //   const baseList = filteredList.length > 0 ? filteredList : peopleList;
+
+  //   setFilteredList(makeSort(sortBy, baseList, searchParams))
+  // }
+
   return (
     <>
       {visibleList.length === 0 ? (
@@ -71,7 +91,7 @@ export const PeopleTable = () => {
                       to={{
                         search: getSearchWith(
                           searchParams.get('sort') !== filter
-                            ? { sort: filter }
+                            ? { sort: filter, order: null }
                             : { order: 'desc' },
                           searchParams,
                         ).paramString,

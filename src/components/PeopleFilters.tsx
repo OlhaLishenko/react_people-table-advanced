@@ -3,15 +3,20 @@ import { ESidebarFilter } from '../Enum/EFilter';
 import classNames from 'classnames';
 import React, { useContext } from 'react';
 import { SearchParamsContext } from '../store/searchHelper';
+// import { PeopleListContext } from '../store/PeopleContext';
+// import { SearchField } from '../store/SortConfig';
+// import { FilterContext } from '../utils/FilterContext';
 
 export const PeopleFilters = () => {
   const sidebarFilters = Object.keys(ESidebarFilter);
+  // const { sortBy, setSortBy } = useContext(PeopleListContext);
   const { searchParams, setSearchParams, getSearchWith } =
     useContext(SearchParamsContext);
+  // const { filteredList, setFilteredList, makeSort } = useContext(FilterContext);
 
   const centuryList = ['16', '17', '18', '19', '20'];
 
-  const centuries = searchParams.getAll('century') || [];
+  const centuries = searchParams.getAll('centuries') || [];
 
   const filterIdentif = (filter: string) => {
     switch (filter) {
@@ -47,7 +52,10 @@ export const PeopleFilters = () => {
                   : null),
             })}
             to={{
-              search: getSearchWith({ sex: filterIdentif(filter) }).paramString,
+              search: getSearchWith(
+                { sex: filterIdentif(filter) },
+                searchParams,
+              ).paramString,
             }}
           >
             {filter}
@@ -79,12 +87,12 @@ export const PeopleFilters = () => {
                 key={century}
                 data-cy="century"
                 className={classNames('button mr-1', {
-                  'is-info': searchParams.getAll('century').includes(century),
+                  'is-info': searchParams.getAll('centuries').includes(century),
                 })}
                 to={{
                   search: getSearchWith(
                     {
-                      century: centuries.includes(century)
+                      centuries: centuries.includes(century)
                         ? centuries.filter(c => c !== century)
                         : [...centuries, century],
                     },
@@ -102,7 +110,7 @@ export const PeopleFilters = () => {
               data-cy="centuryALL"
               className="button is-success is-outlined"
               to={{
-                search: getSearchWith({ century: null }, searchParams)
+                search: getSearchWith({ centuries: null }, searchParams)
                   .paramString,
               }}
             >

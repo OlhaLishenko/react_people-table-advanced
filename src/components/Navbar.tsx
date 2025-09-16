@@ -1,7 +1,11 @@
 import classNames from 'classnames';
+import { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
+import { SearchParamsContext } from '../store/searchHelper';
 
 export const Navbar = () => {
+  const { searchParams } = useContext(SearchParamsContext);
+
   return (
     <nav
       data-cy="nav"
@@ -29,7 +33,10 @@ export const Navbar = () => {
                 'has-background-grey-lighter': isActive,
               })
             }
-            to="/people"
+            to={{
+              pathname: '/people',
+              search: searchParams.toString(),
+            }}
           >
             People
           </NavLink>
