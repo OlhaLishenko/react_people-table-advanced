@@ -1,7 +1,6 @@
 import React, { createContext, useState, useReducer } from 'react';
 import { Person } from '../types';
 import { Actions, InitStateType } from '../types/Alarms';
-import { SearchField } from './SortConfig';
 
 const initialState: InitStateType = {
   error: null,
@@ -28,10 +27,6 @@ const reducer = (currentState: InitStateType, action: Actions) => {
 type PeopleListType = {
   peopleList: Person[];
   setPeopleList: React.Dispatch<React.SetStateAction<Person[]>>;
-  // filteredList: Person[];
-  // setFilteredList: React.Dispatch<React.SetStateAction<Person[]>>;
-  sortBy: SearchField;
-  setSortBy: React.Dispatch<React.SetStateAction<SearchField>>;
   currentState: InitStateType;
   dispatch: React.Dispatch<Actions>;
   loader: boolean;
@@ -41,10 +36,6 @@ type PeopleListType = {
 export const PeopleListContext = createContext<PeopleListType>({
   peopleList: [],
   setPeopleList: () => {},
-  // filteredList: [],
-  // setFilteredList: () => {},
-  sortBy: new SearchField(new URLSearchParams()),
-  setSortBy: () => {},
   currentState: initialState,
   dispatch: () => {},
   loader: false,
@@ -57,22 +48,14 @@ export const PeopleListProvider = ({
   children: React.ReactNode;
 }) => {
   const [peopleList, setPeopleList] = useState<Person[] | []>([]);
-  // const [filteredList, setFilteredList] = useState<Person[] | []>(peopleList);
   const [loader, setLoader] = useState<boolean>(true);
   const [currentState, dispatch] = useReducer(reducer, initialState);
-  const [sortBy, setSortBy] = useState<SearchField>(
-    new SearchField(new URLSearchParams()),
-  );
 
   return (
     <PeopleListContext.Provider
       value={{
         peopleList,
         setPeopleList,
-        // filteredList,
-        // setFilteredList,
-        sortBy,
-        setSortBy,
         currentState,
         dispatch,
         loader,

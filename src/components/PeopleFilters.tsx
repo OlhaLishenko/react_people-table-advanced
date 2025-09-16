@@ -3,16 +3,11 @@ import { ESidebarFilter } from '../Enum/EFilter';
 import classNames from 'classnames';
 import React, { useContext } from 'react';
 import { SearchParamsContext } from '../store/searchHelper';
-// import { PeopleListContext } from '../store/PeopleContext';
-// import { SearchField } from '../store/SortConfig';
-// import { FilterContext } from '../utils/FilterContext';
 
 export const PeopleFilters = () => {
   const sidebarFilters = Object.keys(ESidebarFilter);
-  // const { sortBy, setSortBy } = useContext(PeopleListContext);
   const { searchParams, setSearchParams, getSearchWith } =
     useContext(SearchParamsContext);
-  // const { filteredList, setFilteredList, makeSort } = useContext(FilterContext);
 
   const centuryList = ['16', '17', '18', '19', '20'];
 
@@ -31,8 +26,9 @@ export const PeopleFilters = () => {
 
   const handleSetQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     const param = getSearchWith({ query: event.target.value || null });
+    const query = new URLSearchParams(param);
 
-    setSearchParams(param.param);
+    setSearchParams(query);
   };
 
   return (
@@ -55,7 +51,7 @@ export const PeopleFilters = () => {
               search: getSearchWith(
                 { sex: filterIdentif(filter) },
                 searchParams,
-              ).paramString,
+              ),
             }}
           >
             {filter}
@@ -97,7 +93,7 @@ export const PeopleFilters = () => {
                         : [...centuries, century],
                     },
                     searchParams,
-                  ).paramString,
+                  ),
                 }}
               >
                 {century}
@@ -110,8 +106,7 @@ export const PeopleFilters = () => {
               data-cy="centuryALL"
               className="button is-success is-outlined"
               to={{
-                search: getSearchWith({ centuries: null }, searchParams)
-                  .paramString,
+                search: getSearchWith({ centuries: null }, searchParams),
               }}
             >
               All

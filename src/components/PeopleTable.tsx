@@ -5,31 +5,12 @@ import classNames from 'classnames';
 import { PersonLink } from './PersonLink';
 import { Person } from '../types';
 import { SearchParamsContext } from '../store/searchHelper';
-// import { SearchField } from '../store/SortConfig'
 import { makeSort } from '../utils/Filter';
-// import { FilterContext } from '../utils/FilterContext';
 
 export const PeopleTable = () => {
   const { peopleList } = useContext(PeopleListContext);
-  // const { filteredList, setFilteredList, makeSort } = useContext(FilterContext);
   const { slug } = useParams();
   const { searchParams, getSearchWith } = useContext(SearchParamsContext);
-
-  // const sortBy =
-  //   searchParams.get('order') ||
-  //   searchParams.get('sort') ||
-  //   searchParams.get('sex') ||
-  //   (searchParams.has('query') && 'query') ||
-  //   (searchParams.get('centuries') && 'centuries') ||
-  //   '';
-
-  // const sortBy: SearchField = new SearchField(searchParams);
-
-  // console.log(sortBy);
-
-  // useEffect(() => {
-    //   setFilteredList(visibleList);
-    // }, [sortBy]);
 
   const visibleList = makeSort(peopleList, searchParams);
 
@@ -64,14 +45,6 @@ export const PeopleTable = () => {
   const getSlug = (person: Person) =>
     `${person.name.toLowerCase().replaceAll(' ', '-')}-${person.born}`;
 
-  // const handleFilterList = () => {
-  //   setSortBy(new SearchField(searchParams));
-
-  //   const baseList = filteredList.length > 0 ? filteredList : peopleList;
-
-  //   setFilteredList(makeSort(sortBy, baseList, searchParams))
-  // }
-
   return (
     <>
       {visibleList.length === 0 ? (
@@ -94,11 +67,15 @@ export const PeopleTable = () => {
                             ? { sort: filter, order: null }
                             : { order: 'desc' },
                           searchParams,
-                        ).paramString,
+                        ),
                       }}
                     >
                       <span className="icon">
-                        <i className="fas fa-sort" />
+                        <i className={classNames("fas", {
+                          'fa-sort': !searchParams.has('order') && !searchParams.has('sort'),
+                          'fa-sort-down': searchParams.has('order'),
+                          'fa-sort-up': !searchParams.has('order') && searchParams.has('sort'),
+                        })} />
                       </span>
                     </Link>
                   </span>
@@ -114,7 +91,7 @@ export const PeopleTable = () => {
             {visibleList.map(person => (
               <tr
                 data-cy="person"
-                key={person.name}
+                key={`${person.name}-${person.born}`}
                 className={classNames({
                   'has-background-warning': slug === getSlug(person),
                 })}

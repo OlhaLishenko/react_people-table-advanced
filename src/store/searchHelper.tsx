@@ -1,6 +1,6 @@
 import React from 'react';
 import { createContext } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { SetURLSearchParams, useSearchParams } from 'react-router-dom';
 
 type Param = string | number;
 
@@ -10,23 +10,14 @@ type Params = {
 
 type SearchParamsType = {
   searchParams: URLSearchParams;
-  setSearchParams: React.Dispatch<React.SetStateAction<URLSearchParams>>;
-  getSearchWith: (
-    params: Params,
-    search?: string | URLSearchParams,
-  ) => {
-    paramString: string;
-    param: URLSearchParams;
-  };
+  setSearchParams: SetURLSearchParams;
+  getSearchWith: (params: Params, searchParam?: URLSearchParams) => string;
 };
 
 export const SearchParamsContext = createContext<SearchParamsType>({
   searchParams: new URLSearchParams(),
   setSearchParams: () => {},
-  getSearchWith: () => ({
-    paramString: '',
-    param: new URLSearchParams(),
-  }),
+  getSearchWith: () => '',
 });
 
 export const SearchParamsProvider = ({
@@ -36,10 +27,7 @@ export const SearchParamsProvider = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const getSearchWith = (
-    params: Params,
-    searchParam?: string | URLSearchParams,
-  ) => {
+  const getSearchWith = (params: Params, searchParam?: URLSearchParams) => {
     const newParams = new URLSearchParams(searchParam);
 
     for (const [key, value] of Object.entries(params)) {
@@ -56,10 +44,7 @@ export const SearchParamsProvider = ({
       }
     }
 
-    return {
-      paramString: newParams.toString(),
-      param: newParams,
-    };
+    return newParams.toString();
   };
 
   return (
