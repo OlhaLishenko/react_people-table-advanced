@@ -5,16 +5,15 @@ import classNames from 'classnames';
 import { PersonLink } from './PersonLink';
 import { Person } from '../types';
 import { SearchParamsContext } from '../store/searchHelper';
-import { makeSort } from '../utils/Filter';
+import { makeSort } from '../utils/filter';
 
 export const PeopleTable = () => {
   const { peopleList } = useContext(PeopleListContext);
   const { slug } = useParams();
   const { searchParams, getSearchWith } = useContext(SearchParamsContext);
+  const filters = ['name', 'sex', 'born', 'died'];
 
   const visibleList = makeSort(peopleList, searchParams);
-
-  const filters = ['name', 'sex', 'born', 'died'];
 
   const getMother = (personsMother: string | null): Person | null => {
     if (!personsMother) {
@@ -42,6 +41,28 @@ export const PeopleTable = () => {
     }
   };
 
+  const getParams = (filter: string) => {
+    const currentSort = searchParams.get("sort");
+    const isDesc = searchParams.has("order");
+
+    let params: { sort: string | null; order: string | null } = {
+      sort: filter,
+      order: null,
+    };
+
+    if (currentSort === filter) {
+      if (!isDesc) {
+        params = { sort: filter, order: "desc" };
+      } else {
+        params = { sort: null, order: null };
+      }
+    } else {
+      params = { sort: filter, order: null };
+    }
+
+    return params;
+  }
+
   const getSlug = (person: Person) =>
     `${person.name.toLowerCase().replaceAll(' ', '-')}-${person.born}`;
 
@@ -62,20 +83,19 @@ export const PeopleTable = () => {
                     {filter[0].toUpperCase() + filter.slice(1)}
                     <Link
                       to={{
-                        search: getSearchWith(
-                          searchParams.get('sort') !== filter
-                            ? { sort: filter, order: null }
-                            : { order: 'desc' },
-                          searchParams,
-                        ),
+                        search: getSearchWith(getParams(filter), searchParams),
                       }}
                     >
                       <span className="icon">
-                        <i className={classNames("fas", {
-                          'fa-sort': !searchParams.has('order') && !searchParams.has('sort'),
-                          'fa-sort-down': searchParams.has('order'),
-                          'fa-sort-up': !searchParams.has('order') && searchParams.has('sort'),
-                        })} />
+                        <i
+                          className={classNames('fas', {
+                            'fa-sort': searchParams.get('sort') !== filter,
+                            'fa-sort-down': (searchParams.get('sort') === filter) && searchParams.has('order'),
+                            'fa-sort-up':
+                              !searchParams.has('order') &&
+                              (searchParams.get('sort') === filter),
+                          })}
+                        />
                       </span>
                     </Link>
                   </span>

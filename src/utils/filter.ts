@@ -12,38 +12,23 @@ const getListBySex = (sex: string | string[], list: Person[]) => {
 };
 
 const getList = (
-  currentSort: string | string[],
+  currentSort: string | null,
   list: Person[],
-  search: URLSearchParams,
-  desc: boolean,
+  isDesc: boolean,
 ) => {
   if (!currentSort) {
-    return [...list];
+    return list;
   }
 
-  if (desc) {
-    const prevSort = search.get('sort');
-
-    if (prevSort === 'name' || prevSort === 'sex') {
-      return [...list].sort((a, b) => b[prevSort].localeCompare(a[prevSort]));
-    } else if (prevSort === 'born' || prevSort === 'died') {
-      return [...list].sort((a, b) => b[prevSort] - a[prevSort]);
-    } else {
-      return [...list];
-    }
-  }
+  const sorted = [...list];
 
   if (currentSort === 'name' || currentSort === 'sex') {
-    return [...list].sort((a, b) =>
-      a[currentSort].localeCompare(b[currentSort]),
-    );
+    sorted.sort((a, b) => a[currentSort].localeCompare(b[currentSort]));
+  } else if (currentSort === 'born' || currentSort === 'died') {
+    sorted.sort((a, b) => a[currentSort] - b[currentSort]);
   }
 
-  if (currentSort === 'born' || currentSort === 'died') {
-    return [...list].sort((a, b) => a[currentSort] - b[currentSort]);
-  }
-
-  return [...list];
+  return isDesc ? sorted.reverse() : sorted;
 };
 
 const getListByQuery = (list: Person[], query: string | string[]) => {
@@ -65,40 +50,29 @@ const getListByQuery = (list: Person[], query: string | string[]) => {
   );
 };
 
-const getListByCenturies = (list: Person[], centuries: string | string[]) => {
-  if (!Array.isArray(centuries)) {
-    return [...list];
+const getListByCenturies = (list: Person[], centuries: string[]) => {
+  if (centuries.length === 0) {
+    return list;
   }
 
-  const newList = [...list].filter(person =>
-    centuries.some(c => +c === Number(person.born.toString().slice(0, 2)) + 1),
+  return list.filter(person =>
+    centuries.some(c => +c === Math.floor(person.born / 100) + 1),
   );
-
-  return newList;
 };
 
 export const makeSort = (list: Person[], search: URLSearchParams) => {
   let newList = [...list];
 
-  for (const [key, value] of search.entries()) {
-    if (key === 'sex') {
-      newList = getListBySex(value, newList);
-    }
+  const sex = search.get('sex');
+  const query = search.get('query');
+  const centuries = search.getAll('centuries');
+  const sortField = search.get('sort');
+  const isDesc = search.has('order');
 
-    if (key === 'sort') {
-      newList = getList(value, newList, search, search.has('order'));
-    }
-
-    if (key === 'query') {
-      newList = getListByQuery(newList, value);
-    }
-
-    if (key === 'centuries') {
-      const centuries = search.getAll('centuries');
-
-      newList = getListByCenturies(newList, centuries);
-    }
-  }
+  newList = getList(sortField, newList, isDesc);
+  newList = getListBySex(sex ?? '', newList);
+  newList = getListByQuery(newList, query ?? '');
+  newList = getListByCenturies(newList, centuries);
 
   return newList;
 };

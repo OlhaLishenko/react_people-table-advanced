@@ -6,13 +6,8 @@ import * as getPeopleList from '../api';
 import { Outlet } from 'react-router-dom';
 
 export const PeoplePage = () => {
-  const {
-    setPeopleList,
-    currentState,
-    dispatch,
-    loader,
-    setLoader,
-  } = useContext(PeopleListContext);
+  const { setPeopleList, currentState, dispatch, loader, setLoader } =
+    useContext(PeopleListContext);
 
   useEffect(() => {
     getPeopleList
@@ -42,7 +37,9 @@ export const PeoplePage = () => {
 
       <div className="block">
         <div className="columns is-desktop is-flex-direction-row-reverse">
-          {loader ? <Loader /> : (
+          {loader ? (
+            <Loader />
+          ) : (
             <>
               <div className="column is-7-tablet is-narrow-desktop">
                 <PeopleFilters />
@@ -51,11 +48,11 @@ export const PeoplePage = () => {
               <div className="column">
                 <div className="box table-container">
                   {currentState.error && (
-                    <p data-cy="peopleLoadingError">{ currentState.error }</p>
+                    <p data-cy="peopleLoadingError">{currentState.error}</p>
                   )}
 
                   {currentState.alarm && (
-                    <p data-cy="noPeopleMessage">{ currentState.alarm }</p>
+                    <p data-cy="noPeopleMessage">{currentState.alarm}</p>
                   )}
 
                   <Outlet />

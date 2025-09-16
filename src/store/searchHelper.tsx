@@ -33,9 +33,6 @@ export const SearchParamsProvider = ({
     for (const [key, value] of Object.entries(params)) {
       if (value === null) {
         newParams.delete(key);
-      } else if (key === 'order' && searchParams.has('order')) {
-        newParams.delete(key);
-        newParams.delete('sort');
       } else if (Array.isArray(value)) {
         newParams.delete(key);
         value.forEach(param => newParams.append(key, param.toString()));
